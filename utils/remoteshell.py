@@ -6,11 +6,12 @@ class RemoteShellCommandExecutor:
 
     def __init__(self, user, password, ip, port):
 
-        self.client = paramiko.Transport((ip, port))
-        self.client.connect(username=user, password=password)
+        self.transport = paramiko.Transport((ip, port))
+        self.transport.connect(username=user, password=password)
+        self.sftp = None
 
     def executeRemoteCommand(self, command):
-        session = self.client.open_channel(kind='session')
+        session = self.transport.open_channel(kind='session')
         nbytes = 4096
         stdout_data = []
         stderr_data = []
@@ -34,8 +35,13 @@ class RemoteShellCommandExecutor:
 
         return session.recv_exit_status()
 
+    def scpFile(self, local_path, remote_path):
+        self.sftp = paramiko.SFTPClient.from_transport(self.transport)
+        self.sftp.put(local_path, remote_path)
+        self.sftp.close()
+
     def close(self):
-        self.client.close()
+        self.transport.close()
 
 
 class CommandExecutionError(Exception):
