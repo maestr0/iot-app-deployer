@@ -41,11 +41,11 @@ print '''
 
 Run this command in your project repository:
 '''
-print '     git add remote device ' + edison_user + '@' + edison_ip + ':' + app_repo_dir
+print '     git remote add iot ' + edison_user + '@' + edison_ip + ':' + app_repo_dir
 print '''
 To deploy your app use:
 
-    git push device
+    git push iot
 
 '''
 
