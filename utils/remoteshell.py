@@ -8,27 +8,36 @@ class RemoteShellCommandExecutor:
 
         self.client = paramiko.Transport((ip, port))
         self.client.connect(username=user, password=password)
-        self.session = self.client.open_channel(kind='session')
 
     def executeRemoteCommand(self, command):
-
+        session = self.client.open_channel(kind='session')
         nbytes = 4096
         stdout_data = []
         stderr_data = []
-
-        self.session.exec_command(command)
+        print 'Executing: ' + command
+        session.exec_command(command)
         while True:
-            if self.session.recv_ready():
-                stdout_data.append(self.session.recv(nbytes))
-            if self.session.recv_stderr_ready():
-                stderr_data.append(self.session.recv_stderr(nbytes))
-            if self.session.exit_status_ready():
+            if session.recv_ready():
+                stdout_data.append(session.recv(nbytes))
+            if session.recv_stderr_ready():
+                stderr_data.append(session.recv_stderr(nbytes))
+            if session.exit_status_ready():
                 break
 
-        print ''.join(stdout_data)
-        print ''.join(stderr_data)
-        return self.session.recv_exit_status()
+        output = ''.join(stdout_data)
+        if output:
+            print output
+
+        errors = ''.join(stderr_data)
+        if errors:
+            print errors
+
+        return session.recv_exit_status()
 
     def close(self):
-        self.session.close()
         self.client.close()
+
+
+class CommandExecutionError(Exception):
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)
