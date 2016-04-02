@@ -25,9 +25,9 @@ class RemoteShellCommandExecutor:
             if self.session.exit_status_ready():
                 break
 
-        print 'exit status: ', self.session.recv_exit_status()
         print ''.join(stdout_data)
         print ''.join(stderr_data)
+        return self.session.recv_exit_status()
 
     def close(self):
         self.session.close()
