@@ -12,4 +12,6 @@ npm install
 
 forever start index.js
 
-echo "All done ;)"
+echo "Project updated"
+
+forever logs index.js -f
