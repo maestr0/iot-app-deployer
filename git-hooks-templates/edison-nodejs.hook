@@ -10,7 +10,7 @@ forever stop index.js
 
 npm install
 
-forever start index.js
+NODE_ENV=production forever start index.js
 
 echo "Project updated"
 
